@@ -3,14 +3,15 @@ import { createCamera } from './camera.js';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 
 //Initial scene setup
+const gameWindow = document.getElementById('render-target');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x777777);
 
-const camera = createCamera(document.body);
+const camera = createCamera(gameWindow);
 
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+renderer.setSize( gameWindow.offsetWidth, gameWindow.offsetHeight );
+gameWindow.appendChild( renderer.domElement );
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({color: 0xff0000});
@@ -31,15 +32,15 @@ function stop() {
 
 
 // Add mouse event listeners
-document.addEventListener('mousedown', onMouseDown);
-document.addEventListener('mouseup', onMouseUp);
-document.addEventListener('mousemove', onMouseMove);
+gameWindow.addEventListener('mousedown', onMouseDown);
+gameWindow.addEventListener('mouseup', onMouseUp);
+gameWindow.addEventListener('mousemove', onMouseMove);
 
 // Handle window resize
 window.addEventListener('resize', () => {
-    camera.camera.aspect = window.innerWidth / window.innerHeight;
+    camera.camera.aspect = gameWindow.offsetWidth / gameWindow.offsetHeight;
     camera.camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
 });
 
 export function onMouseDown(){
@@ -60,10 +61,12 @@ export function onMouseMove(event){
 
 if ( WebGL.isWebGL2Available() ) {
     // Initiate function or other initializations here
-    start(); 
+    window.addEventListener('load', () => {
+        start(); // Call the function that initializes the renderer and starts the animation loop
+    });
 } else {
     const warning = WebGL.getWebGL2ErrorMessage();
-    document.getElementById( 'container' ).appendChild( warning );
+    document.getElementById('root-window').appendChild( warning );
 }
 
 
